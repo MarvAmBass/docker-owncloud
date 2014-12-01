@@ -57,6 +57,12 @@ mkdir -p "/usr/share/nginx/html$OWNCLOUD_RELATIVE_URL_ROOT"
 cp -a /var/www/owncloud/* "/usr/share/nginx/html$OWNCLOUD_RELATIVE_URL_ROOT"
 chown -R www-data:www-data "/usr/share/nginx/html$OWNCLOUD_RELATIVE_URL_ROOT"
 
+if [ ! -z ${OWNCLOUD_DO_NOT_INITIALIZE+x} ]
+then
+  echo ">> OWNCLOUD_DO_NOT_INITIALIZE set - skipping initialization"
+  exit 0;
+fi
+
 # headless installation
 if [ $(mysql -h $OWNCLOUD_MYSQL_HOST -P $OWNCLOUD_MYSQL_PORT -u $OWNCLOUD_MYSQL_USER -p$OWNCLOUD_MYSQL_PASSWORD $OWNCLOUD_MYSQL_DBNAME -e "show tables;" 2> /dev/null | wc -l) -lt 10 ]
 then
@@ -84,9 +90,9 @@ then
 	sleep 1
 	killall nginx
 else
-	echo ">> owncloud db already installed"
-	# update db server
-	sed -i "s/.*'dbhost' \=>.*/  'dbhost' => '$OWNCLOUD_MYSQL_HOST:$OWNCLOUD_MYSQL_PORT',/g" /var/www/owncloud/config/config.php
-	# update mail server
-	sed -i "s/{.*:993/{$OWNCLOUD_IMAP_HOST:993/g" /var/www/owncloud/config/config.php
+#	echo ">> owncloud db already installed"
+#	# update db server
+#	sed -i "s/.*'dbhost' \=>.*/  'dbhost' => '$OWNCLOUD_MYSQL_HOST:$OWNCLOUD_MYSQL_PORT',/g" /var/www/owncloud/config/config.php
+#	# update mail server
+#	sed -i "s/{.*:993/{$OWNCLOUD_IMAP_HOST:993/g" /var/www/owncloud/config/config.php
 fi

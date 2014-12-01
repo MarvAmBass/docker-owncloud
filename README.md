@@ -15,12 +15,17 @@ View in GitHub [MarvAmBass/docker-owncloud](https://github.com/MarvAmBass/docker
 
 ### For Headless installation required
 
+OwnCloud Install Settings
+
+* __OWNCLOUD\_DO\_NOT_INITIALIZE__
+ * not set by default - it set with any value, initialization process is skipped
+ 
 OwnCloud Database Settings
 
 * __OWNCLOUD\_MYSQL\_USER__
- * no default - if null it will start piwik in initial mode
+ * no default - if null it will use sqlite
 * __OWNCLOUD\_MYSQL\_PASSWORD__
- * no default - if null it will start piwik in initial mode
+ * no default - if null it will use sqlite
 * __OWNCLOUD\_MYSQL\_HOST__
  * default: _mysql_
 * __OWNCLOUD\_MYSQL\_PORT__
@@ -50,6 +55,6 @@ OwnCloud Site Settings
 
 First you need a running MySQL Container (you could use: [marvambass/mysql](https://registry.hub.docker.com/u/marvambass/mysql/)).
 
-You need to _--link_ your mysql container to marvambass/piwik with the name __mysql__
+You need to _--link_ your mysql container to marvambass/owncloud with the name __mysql__
 
     docker run -d -p 443:443 --link mysql:mysql --name owncloud marvambass/owncloud
