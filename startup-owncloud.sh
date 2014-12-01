@@ -1,5 +1,9 @@
 #/bin/bash
 
+###
+# Variables
+###
+
 if [ -z ${OWNCLOUD_IMAP_HOST+x} ]
 then
   OWNCLOUD_IMAP_HOST=mail
@@ -32,30 +36,34 @@ then
   echo ">> generated owncloud admin password: $OWNCLOUD_ADMIN_PASSWORD"
 fi
 
-echo ">> set MYSQL Host: $OWNCLOUD_MYSQL_HOST"
-#sed -i "s/OWNCLOUD_MYSQL_HOST/$OWNCLOUD_MYSQL_HOST/g" /piwik/config/config.ini.php
-
-echo ">> set MYSQL Port: $OWNCLOUD_MYSQL_PORT"
-#sed -i "s/OWNCLOUD_MYSQL_PORT/$OWNCLOUD_MYSQL_PORT/g" /piwik/config/config.ini.php
-
-echo ">> set MYSQL User: <hidden>"
-#sed -i "s/OWNCLOUD_MYSQL_USER/$OWNCLOUD_MYSQL_USER/g" /piwik/config/config.ini.php
-
-echo ">> set MYSQL Password: <hidden>"
-#sed -i "s/OWNCLOUD_MYSQL_PASSWORD/$OWNCLOUD_MYSQL_PASSWORD/g" /piwik/config/config.ini.php
-
-echo ">> set MYSQL DB Name: $OWNCLOUD_MYSQL_DBNAME"
-#sed -i "s/OWNCLOUD_MYSQL_DBNAME/$OWNCLOUD_MYSQL_DBNAME/g" /piwik/config/config.ini.php
+if [ -z ${OWNCLOUD_MYSQL_USER+x} ] || [ -z ${OWNCLOUD_MYSQL_PASSWORD+x} ]
+then
+  echo ">> using SQLite"
+else
+  echo ">> set MYSQL Host: $OWNCLOUD_MYSQL_HOST"
+  echo ">> set MYSQL Port: $OWNCLOUD_MYSQL_PORT"
+  echo ">> set MYSQL User: <hidden>"
+  echo ">> set MYSQL Password: <hidden>"
+  echo ">> set MYSQL DB Name: $OWNCLOUD_MYSQL_DBNAME"
+fi
 
 if [ -z ${OWNCLOUD_RELATIVE_URL_ROOT+x} ]
 then
-  OWNCLOUD_RELATIVE_URL_ROOT="/" 
+  OWNCLOUD_RELATIVE_URL_ROOT="/"
 fi
 
+###
+# Install
+###
+
 echo ">> making owncloud available beneath: $OWNCLOUD_RELATIVE_URL_ROOT"
+mkdir -p "/usr/share/nginx/html$OWNCLOUD_RELATIVE_URL_ROOT" 
+cp -a /var/www/owncloud /owncloud
+chown -R www-data:www-data /owncloud
+echo ">> adding softlink from /owncloud to $OWNCLOUD_RELATIVE_URL_ROOT"
 mkdir -p "/usr/share/nginx/html$OWNCLOUD_RELATIVE_URL_ROOT"
-cp -a /var/www/owncloud/* "/usr/share/nginx/html$OWNCLOUD_RELATIVE_URL_ROOT"
-chown -R www-data:www-data "/usr/share/nginx/html$OWNCLOUD_RELATIVE_URL_ROOT"
+rm -rf "/usr/share/nginx/html$OWNCLOUD_RELATIVE_URL_ROOT"
+ln -s /owncloud $(echo "/usr/share/nginx/html$OWNCLOUD_RELATIVE_URL_ROOT" | sed 's/\/$//')
 
 if [ ! -z ${OWNCLOUD_DO_NOT_INITIALIZE+x} ]
 then
@@ -63,7 +71,9 @@ then
   exit 0
 fi
 
-# headless installation
+###
+# Headless initialization
+###
 if [ $(mysql -h $OWNCLOUD_MYSQL_HOST -P $OWNCLOUD_MYSQL_PORT -u $OWNCLOUD_MYSQL_USER -p$OWNCLOUD_MYSQL_PASSWORD $OWNCLOUD_MYSQL_DBNAME -e "show tables;" 2> /dev/null | wc -l) -lt 10 ]
 then
   sleep 1
