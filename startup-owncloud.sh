@@ -58,11 +58,23 @@ fi
 
 echo ">> making owncloud available beneath: $OWNCLOUD_RELATIVE_URL_ROOT"
 mkdir -p "/usr/share/nginx/html$OWNCLOUD_RELATIVE_URL_ROOT" 
+
 # copy everything except data directory
 cd /var/www/; tar cf - --exclude='owncloud/data/' owncloud | ( cd / ; tar xfp -); cd /
+
 # copy data directory if necessary
-if [ ! -e /owncloud/data/.ocdata ];then echo ">> first start: copy data directory";cd /var/www/; tar cf - owncloud/data | ( cd / ; tar xfp -); cd /; fi
+if [ ! -e /owncloud/data/.ocdata ]
+then
+  echo ">> first start: copy data directory"
+  cd /var/www/
+  tar cf - owncloud/data | ( cd / ; tar xfp -)
+  cd /
+fi
+
+# fix rights
 chown -R www-data:www-data /owncloud
+
+# adding softlink for nginx connection
 echo ">> adding softlink from /owncloud to $OWNCLOUD_RELATIVE_URL_ROOT"
 mkdir -p "/usr/share/nginx/html$OWNCLOUD_RELATIVE_URL_ROOT"
 rm -rf "/usr/share/nginx/html$OWNCLOUD_RELATIVE_URL_ROOT"
