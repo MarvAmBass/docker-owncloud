@@ -1,75 +1,49 @@
-# Docker Piwik Container (marvambass/owncloud)
+# Docker OwnCloud Container (marvambass/owncloud)
 _maintained by MarvAmBass_
 
 ## What is it
 
-This Dockerfile (available as ___marvambass/owncloud___) gives you a completly secure piwik.
+This Dockerfile (available as ___marvambass/owncloud___) gives you a completly secure owncloud.
 
 It's based on the [marvambass/nginx-ssl-php](https://registry.hub.docker.com/u/marvambass/nginx-ssl-php/) Image
 
-View in Docker Registry [marvambass/piwik](https://registry.hub.docker.com/u/marvambass/piwik/)
+View in Docker Registry [marvambass/owncloud](https://registry.hub.docker.com/u/marvambass/owncloud/)
 
-View in GitHub [MarvAmBass/docker-piwik](https://github.com/MarvAmBass/docker-piwik)
+View in GitHub [MarvAmBass/docker-owncloud](https://github.com/MarvAmBass/docker-owncloud)
 
 ## Environment variables and defaults
 
 ### For Headless installation required
 
-Piwik Database Settings
+OwnCloud Database Settings
 
-* __PIWIK\_MYSQL\_USER__
+* __OWNCLOUD\_MYSQL\_USER__
  * no default - if null it will start piwik in initial mode
-* __PIWIK\_MYSQL\_PASSWORD__
+* __OWNCLOUD\_MYSQL\_PASSWORD__
  * no default - if null it will start piwik in initial mode
-* __PIWIK\_MYSQL\_HOST__
+* __OWNCLOUD\_MYSQL\_HOST__
  * default: _mysql_
-* __PIWIK\_MYSQL\_PORT__
+* __OWNCLOUD\_MYSQL\_PORT__
  * default: _3306_ - if you use a different mysql port change it
-* __PIWIK\_MYSQL\_DBNAME__
- * default: _piwik_
-* __PIWIK\_MYSQL\_PREFIX__
- * default: _piwik\__
+* __OWNCLOUD\_MYSQL\_DBNAME__
+ * default: _owncloud_
  
-Piwik Admin Settings
+OwnCloud Admin Settings
 
-* __PIWIK\_ADMIN__
- * default: admin - the name of the admin user
-* __PIWIK\_ADMIN\_PASSWORD__
+* __OWNCLOUD\_ADMIN__
+ * default: _admin_ - the name of the admin user
+* __OWNCLOUD\_ADMIN\_PASSWORD__
  * default: <randomly generated 10 characters> - the password for the admin user
-* __PIWIK\_ADMIN\_MAIL__
- * default: no@no.tld - only needed if you are interested in one of those newsletters
-* __PIWIK\_SUBSCRIBE\_NEWSLETTER__
- * __1__ or __0__ - default: _0_
-* __PIWIK\_SUBSCRIBE\_PRO\_NEWSLETTER__
- * __1__ or __0__ - default: _0_
 
-Website to Track Settings
+OwnCloud Site Settings
 
-* __SITE\_NAME__
- * default: _My local Website_
-* __SITE\_URL__
- * default: _http://localhost_
-* __SITE\_TIMEZONE__
- * default: _Europe/Berlin_
-* __SITE\_ECOMMERCE__
- * __1__ or __0__ - default: _0_
-
-Piwik Track Settings
-
-* __ANONYMISE\_IP__
- * __1__ or __0__ - this will anonymise IPs - default: _1_
-* __DO\_NOT\_TRACK__
- * __1__ or __0__ - this will skip browsers with do not track enabled from tracking - default: _1_
+* __OWNCLOUD\_RELATIVE\_URL\_ROOT__
+ * default: _/_ - you can chance that to whatever you want/need
  
-### Misc Settings
-
-* __PIWIK\_RELATIVE\_URL\_ROOT__
- * default: _/piwik_ - you can chance that to whatever you want/need
-
 ### Inherited Variables
 
 * __DH\_SIZE__
- * default: 512 fast but a bit insecure. if you need more security just use a higher value
+ * default: 1024 fast but a bit insecure. if you need more security just use a higher value
  * inherited from [MarvAmBass/docker-nginx-ssl-secure](https://github.com/MarvAmBass/docker-nginx-ssl-secure)
 
 ## Using the marvambass/piwik Container
@@ -78,4 +52,4 @@ First you need a running MySQL Container (you could use: [marvambass/mysql](http
 
 You need to _--link_ your mysql container to marvambass/piwik with the name __mysql__
 
-    docker run -d -p 80:80 -p 443:443 --link mysql:mysql --name piwik marvambass/piwik
+    docker run -d -p 443:443 --link mysql:mysql --name owncloud marvambass/owncloud

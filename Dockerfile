@@ -1,7 +1,7 @@
 FROM marvambass/nginx-ssl-php
 MAINTAINER MarvAmBass
 
-ENV DH_SIZE 512
+ENV DH_SIZE 1024
 
 RUN apt-get update && apt-get install -y \
     mysql-client \
