@@ -51,7 +51,7 @@ OwnCloud Site Settings
  * default: 1024 fast but a bit insecure. if you need more security just use a higher value
  * inherited from [MarvAmBass/docker-nginx-ssl-secure](https://github.com/MarvAmBass/docker-nginx-ssl-secure)
 
-## Using the marvambass/piwik Container
+## Using the marvambass/owncloud Container
 
 First you need a running MySQL Container (you could use: [marvambass/mysql](https://registry.hub.docker.com/u/marvambass/mysql/)).
 
