@@ -60,7 +60,7 @@ chown -R www-data:www-data "/usr/share/nginx/html$OWNCLOUD_RELATIVE_URL_ROOT"
 if [ ! -z ${OWNCLOUD_DO_NOT_INITIALIZE+x} ]
 then
   echo ">> OWNCLOUD_DO_NOT_INITIALIZE set - skipping initialization"
-  exit 0;
+  exit 0
 fi
 
 # headless installation
@@ -90,7 +90,7 @@ then
 	sleep 1
 	killall nginx
 else
-#	echo ">> owncloud db already installed"
+	echo ">> owncloud db already installed"
 #	# update db server
 #	sed -i "s/.*'dbhost' \=>.*/  'dbhost' => '$OWNCLOUD_MYSQL_HOST:$OWNCLOUD_MYSQL_PORT',/g" /var/www/owncloud/config/config.php
 #	# update mail server
