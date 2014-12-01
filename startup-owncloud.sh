@@ -23,13 +23,13 @@ fi
 if [ -z ${OWNCLOUD_ADMIN+x} ]
 then
   OWNCLOUD_ADMIN="admin"
-  echo ">> piwik admin user: $OWNCLOUD_ADMIN"
+  echo ">> owncloud admin user: $OWNCLOUD_ADMIN"
 fi
 
 if [ -z ${OWNCLOUD_ADMIN_PASSWORD+x} ]
 then
   OWNCLOUD_ADMIN_PASSWORD=`perl -e 'my @chars = ("A".."Z", "a".."z"); my $string; $string .= $chars[rand @chars] for 1..10; print $string;'`
-  echo ">> generated piwik admin password: $OWNCLOUD_ADMIN_PASSWORD"
+  echo ">> generated owncloud admin password: $OWNCLOUD_ADMIN_PASSWORD"
 fi
 
 echo ">> set MYSQL Host: $OWNCLOUD_MYSQL_HOST"
@@ -58,7 +58,7 @@ cp -a /var/www/owncloud/* "/usr/share/nginx/html$OWNCLOUD_RELATIVE_URL_ROOT"
 chown -R www-data:www-data "/usr/share/nginx/html$OWNCLOUD_RELATIVE_URL_ROOT"
 
 # headless installation
-if [ $(mysql -h $OWNCLOUD_MYSQL_HOST -P $OWNCLOUD_MYSQL_PORT -u $OWNCLOUD_MYSQL_USER -p$OWNCLOUD_MYSQL_PASSWORD $OWNCLOUD_MYSQL_DBNAME -e "show tables;" | wc -l) -lt 10 ]
+if [ $(mysql -h $OWNCLOUD_MYSQL_HOST -P $OWNCLOUD_MYSQL_PORT -u $OWNCLOUD_MYSQL_USER -p$OWNCLOUD_MYSQL_PASSWORD $OWNCLOUD_MYSQL_DBNAME -e "show tables;" 2> /dev/null | wc -l) -lt 10 ]
 then
   sleep 1
   nginx > /dev/null 2> /dev/null &
@@ -66,13 +66,23 @@ then
 	## Create OwnCloud Installation
 	echo ">> init owncloud installation"
 	DATA_DIR=/usr/share/nginx/html$OWNCLOUD_RELATIVE_URL_ROOT\data
-	DB_TYPE="mysql"
-	POST=`echo "install=true&adminlogin=$OWNCLOUD_ADMIN&adminpass=$OWNCLOUD_ADMIN_PASSWORD&adminpass-clone=$OWNCLOUD_ADMIN_PASSWORD&directory=$DATA_DIR&dbtype=$DB_TYPE&dbuser=$OWNCLOUD_MYSQL_USER&dbpass=$OWNCLOUD_MYSQL_PASSWORD&dbpass-clone=$OWNCLOUD_MYSQL_PASSWORD&dbname=$OWNCLOUD_MYSQL_DBNAME&dbhost=$OWNCLOUD_MYSQL_HOST:$OWNCLOUD_MYSQL_PORT"`
 
+  if [ -z ${OWNCLOUD_MYSQL_USER+x} ] || [ -z ${OWNCLOUD_MYSQL_PASSWORD+x} ]
+  then
+    echo ">> using sqlite DB"
+  	DB_TYPE="sqlite"
+  	POST=`echo "install=true&adminlogin=$OWNCLOUD_ADMIN&adminpass=$OWNCLOUD_ADMIN_PASSWORD&adminpass-clone=$OWNCLOUD_ADMIN_PASSWORD&directory=$DATA_DIR&dbtype=$DB_TYPE&dbuser=&dbpass=&dbpass-clone=&dbname=&dbhost=localhost"`
+  else
+    echo ">> using mysql DB"
+  	DB_TYPE="mysql"
+  	POST=`echo "install=true&adminlogin=$OWNCLOUD_ADMIN&adminpass=$OWNCLOUD_ADMIN_PASSWORD&adminpass-clone=$OWNCLOUD_ADMIN_PASSWORD&directory=$DATA_DIR&dbtype=$DB_TYPE&dbuser=$OWNCLOUD_MYSQL_USER&dbpass=$OWNCLOUD_MYSQL_PASSWORD&dbpass-clone=$OWNCLOUD_MYSQL_PASSWORD&dbname=$OWNCLOUD_MYSQL_DBNAME&dbhost=$OWNCLOUD_MYSQL_HOST:$OWNCLOUD_MYSQL_PORT"`
+  fi
+  
 	echo "# wget -O - --no-check-certificate --no-proxy --post-data \"$POST\" "https://localhost$OWNCLOUD_RELATIVE_URL_ROOT\index.php
-	wget -O - --no-check-certificate --no-proxy --post-data "$POST" https://localhost$OWNCLOUD_RELATIVE_URL_ROOT\index.php
-	
-	sleep 1; killall nginx
+  wget -O - --no-check-certificate --no-proxy --post-data "$POST" https://localhost$OWNCLOUD_RELATIVE_URL_ROOT\index.php > /dev/null 2> /dev/null
+  
+	sleep 1
+	killall nginx
 else
 	echo ">> owncloud db already installed"
 	# update db server
