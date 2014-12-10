@@ -56,6 +56,9 @@ fi
 # Install
 ###
 
+echo ">> enable ./occ script"
+chmod a+x /owncloud/occ
+
 echo ">> making owncloud available beneath: $OWNCLOUD_RELATIVE_URL_ROOT"
 mkdir -p "/usr/share/nginx/html$OWNCLOUD_RELATIVE_URL_ROOT" 
 
@@ -104,6 +107,12 @@ echo ">> starting nginx to configure owncloud"
 sleep 1
 nginx > /dev/null 2> /dev/null &
 sleep 1
+
+## Update Database if this is run after an update
+echo ">> update database if necessary"
+cd /usr/share/nginx/html$OWNCLOUD_RELATIVE_URL_ROOT
+./occ upgrade
+cd -
 
 ## Create OwnCloud Installation
 echo ">> init owncloud installation"
