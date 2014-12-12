@@ -53,6 +53,24 @@ then
 fi
 
 ###
+# Pre Install
+###
+
+if [ ! -z ${OWNCLOUD_HSTS_HEADERS_ENABLE+x} ]
+then
+  echo ">> HSTS Headers enabled"
+  sed -i 's/#add_header Strict-Transport-Security/add_header Strict-Transport-Security/g' /etc/nginx/conf.d/nginx-owncloud.conf
+
+  if [ ! -z ${OWNCLOUD_HSTS_HEADERS_ENABLE_NO_SUBDOMAINS+x} ]
+  then
+    echo ">> HSTS Headers configured without includeSubdomains"
+    sed -i 's/; includeSubdomains//g' /etc/nginx/conf.d/nginx-owncloud.conf
+  fi
+else
+  echo ">> HSTS Headers disabled"
+fi
+
+###
 # Install
 ###
 
