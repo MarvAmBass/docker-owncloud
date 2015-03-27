@@ -129,7 +129,8 @@ sleep 1
 ## Update Database if this is run after an update
 echo ">> update database if necessary"
 cd /usr/share/nginx/html$OWNCLOUD_RELATIVE_URL_ROOT
-./occ upgrade
+chmod a+x occ
+sudo -u www-data ./occ upgrade
 cd -
 
 ## Create OwnCloud Installation
