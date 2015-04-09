@@ -3,7 +3,7 @@ MAINTAINER MarvAmBass
 
 ENV DH_SIZE 1024
 
-RUN apt-get update && apt-get install -y \
+RUN apt-get update; apt-get install -y \
     mysql-client \
     php5-mysql \
     wget
@@ -12,16 +12,17 @@ RUN apt-get update && apt-get install -y \
 RUN rm -rf /usr/share/nginx/html/*
 
 # install owncloud
-RUN echo 'deb http://download.opensuse.org/repositories/isv:/ownCloud:/community/Debian_7.0/ /' >> /etc/apt/sources.list.d/owncloud.list 
-RUN wget -O - 'http://download.opensuse.org/repositories/isv:ownCloud:community/Debian_7.0/Release.key' | apt-key add -
-RUN apt-get update && apt-get install -y \
+RUN echo 'deb http://download.opensuse.org/repositories/isv:/ownCloud:/community/Debian_7.0/ /' >> /etc/apt/sources.list.d/owncloud.list && \
+    wget -O - 'http://download.opensuse.org/repositories/isv:ownCloud:community/Debian_7.0/Release.key' | apt-key add -
+
+RUN apt-get update; apt-get install -y \
     owncloud \
     mysql-client \
     php5-imap \
     sendmail
 
 # optionals
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN apt-get update; apt-get install -y --no-install-recommends \
     libreoffice
 
 # install nginx owncloud config
